@@ -1,6 +1,6 @@
 <img src="ea.png" data-canonical-src="ea.png" width="200" height="200" />
 
-A Python library for the detection and visualization of emotions in texts, coming soon with the first release ✨
+EmoAtlas: An emotional network analyzer of texts that merges psychological lexicons, artificial intelligence, and network science. Read our paper [here on Behavior Research Methods]([https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0222870](https://link.springer.com/article/10.3758/s13428-024-02553-7)
 
 
 ## Description
