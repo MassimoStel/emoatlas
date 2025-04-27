@@ -929,6 +929,7 @@ class EmoScores:
         top_quantile=None,
         figsize=(12, 8),
         title=" ",
+        custom_font = 10,
     ):
         """
         Plot the mindset stream graph.
@@ -1061,7 +1062,7 @@ class EmoScores:
         # Calculate label size
         width, height = figsize
         reference_width = 12  # Reference width for (12, 8) figure
-        base_font_size = 10 - base_size * 0.07  # Original calculation
+        base_font_size = custom_font - base_size * 0.07  # Original calculation
         scaled_font_size = base_font_size * (
             width / reference_width
         )  # Scale based on width ratio
