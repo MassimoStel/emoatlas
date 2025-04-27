@@ -39,4 +39,6 @@ A Google Colab simple demo is also available [here](https://colab.research.googl
 **It is suggested to refer to the guides of the `Demos&Guides/` folder to understand how to use the package.**
 
 ## Acknowledgements
-Thanks to [@FinleyGibson](https://github.com/FinleyGibson), [@GiulioRossetti](https://github.com/GiulioRossetti) and [@RiccardoImprota](https://github.com/RiccardoImprota) for their contribution to the testing, debugging and refactoring this library.
+The original version of EmoAtlas was written by [@AlfonsoSemeraro](https://github.com/alfonsosemeraro).
+
+Thanks to [@FinleyGibson](https://github.com/FinleyGibson), [@GiulioRossetti](https://github.com/GiulioRossetti) and especially [@RiccardoImprota](https://github.com/RiccardoImprota) for their contribution to the testing, debugging and refactoring of this library.
