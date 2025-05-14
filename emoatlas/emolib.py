@@ -930,6 +930,7 @@ class EmoScores:
         figsize=(12, 8),
         title=" ",
         custom_font = 10,
+        custom_x_offset = 0,
     ):
         """
         Plot the mindset stream graph.
@@ -1003,7 +1004,7 @@ class EmoScores:
 
         # Set positions
         for node in nodes:
-            pos[node] = (x_positions[node], y_positions[node])
+            pos[node] = (x_positions[node] + custom_x_offset, y_positions[node])
 
         # Adjust start and end node positions
         pos[start_node] = (0, 0)
