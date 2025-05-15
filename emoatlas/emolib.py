@@ -1004,11 +1004,11 @@ class EmoScores:
 
         # Set positions
         for node in nodes:
-            pos[node] = (x_positions[node] + custom_x_offset, y_positions[node])
+            pos[node] = (x_positions[node], y_positions[node])
 
         # Adjust start and end node positions
-        pos[start_node] = (0, 0)
-        pos[end_node] = (1, 0)
+        pos[start_node] = (0 + custom_x_offset, 0)
+        pos[end_node] = (1 - custom_x_offset, 0)
 
         # Determine node colors
         node_colors = []
