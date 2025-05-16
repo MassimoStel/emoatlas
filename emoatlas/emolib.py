@@ -920,6 +920,8 @@ class EmoScores:
         # Return only the paths (not the weights) from the top quantile
         return [path for path, _ in sorted_paths[:paths_to_keep]]
 
+
+
     def plot_mindset_stream(
         self,
         graph,
@@ -929,27 +931,27 @@ class EmoScores:
         top_quantile=None,
         figsize=(12, 8),
         title=" ",
-        custom_font = 10,
-        custom_x_offset = 0,
+        custom_font=10,
+        custom_x_offset=0,
+        marginset=0.3
     ):
         """
-        Plot the mindset stream graph.
+        Plot the mindset stream graph using class valence definitions.
 
         Parameters:
         - graph (list): A raw edgelist or a FormamentisNetwork, might include weights.
         - shortest_paths(list of lists): if None, it will compute all shortest paths between the 2 nodes.
         - start_node: The starting node for the shortest paths.
         - end_node: The ending node for the shortest paths.
-        - quantile (float): The top quantile of shortest paths to keep. Defaults to None. Requires a weighted edgelist.
         - figsize (tuple): Figure size for the plot. Defaults to (12, 8).
 
         """
         if type(graph).__name__ == "FormamentisNetwork":
             graph = graph.edges
 
-        if shortest_paths == None:
+        if shortest_paths is None:
             shortest_paths = self.find_all_shortest_paths(graph, start_node, end_node)
-        if top_quantile != None and shortest_paths == None:
+        if top_quantile is not None and shortest_paths is None:
             try:
                 shortest_paths = self.get_top_quantile_shortest_paths(
                     graph, start_node, end_node, top_quantile=top_quantile
@@ -971,8 +973,6 @@ class EmoScores:
                 edge = tuple(sorted([path[i], path[i + 1]]))
                 edge_counts[edge] = edge_counts.get(edge, 0) + 1
 
-        # If the network is weighted, use the weights as edge counts
-        # If not weighted, all weights will be 1
         is_weighted = len(graph[0]) == 3
         for edge in graph:
             sorted_edge = tuple(sorted([edge[0], edge[1]]))
@@ -983,110 +983,68 @@ class EmoScores:
         for edge, count in edge_counts.items():
             G.add_edge(edge[0], edge[1], weight=count)
 
-        # Create a layout with start_node on the left and end_node on the right
-        pos = {}
         nodes = set(node for path in shortest_paths for node in path)
-        x_positions = {node: 0 for node in nodes}
-        x_positions[start_node] = 0
-        x_positions[end_node] = 1
-        for path in shortest_paths:
-            for i, node in enumerate(path[1:-1], 1):
-                x_positions[node] = max(x_positions[node], i / (len(path) - 1))
 
-        # Assign y-positions with more space
+        # Set positions with fixed padding
+        pos = {}
+        padding = 0.1  # fixed padding for stable visualization
+        x_positions = {node: 0 for node in nodes}
+        x_positions[start_node] = padding
+        x_positions[end_node] = 1 - padding
+        for path in shortest_paths:
+            path_length = len(path) - 1
+            for i, node in enumerate(path[1:-1], 1):
+                proportional_position = padding + (i / path_length) * (1 - 2 * padding)
+                x_positions[node] = max(x_positions[node], proportional_position)
+
         y_positions = {}
         for x in set(x_positions.values()):
             nodes_at_x = [node for node, pos in x_positions.items() if pos == x]
             for i, node in enumerate(nodes_at_x):
-                y_positions[node] = (
-                    i - (len(nodes_at_x) - 1) / 2
-                ) * 0.2  # Increased spacing
+                y_positions[node] = (i - (len(nodes_at_x) - 1) / 2) * 0.3
 
-        # Set positions
         for node in nodes:
             pos[node] = (x_positions[node], y_positions[node])
 
-        # Adjust start and end node positions
-        pos[start_node] = (0 + custom_x_offset, 0)
-        pos[end_node] = (1 - custom_x_offset, 0)
+        pos[start_node] = (padding + custom_x_offset, 0)
+        pos[end_node] = (1 - padding - custom_x_offset, 0)
 
-        # Determine node colors
         node_colors = []
         for node in G.nodes():
             if node in positive:
-                node_colors.append("#1f77b4")  # Blue
+                node_colors.append("#1f77b4")
             elif node in negative:
-                node_colors.append("#d62728")  # Red
+                node_colors.append("#d62728")
             else:
-                node_colors.append("#7f7f7f")  # Grey
+                node_colors.append("#7f7f7f")
 
-        # Draw the graph
-        base_size = len(G.nodes())
         plt.figure(figsize=figsize, dpi=300)
 
-        # Draw edges with varying thickness and colors
         max_count = max(edge_counts.values())
-        min_width = (1.5 if is_weighted else 3) * (
-            figsize[0] / 12
-        )  # Reduced minimum edge width for unweighted networks
-        max_width = (16 if is_weighted else 3) * (
-            figsize[0] / 12
-        )  # Reduced maximum edge width for unweighted networks
+        min_width = (1.5 if is_weighted else 3) * (figsize[0] / 12)
+        max_width = (16 if is_weighted else 3) * (figsize[0] / 12)
         for edge, count in edge_counts.items():
             start, end = edge
+            color = "#7f7f7f"
             if start in positive and end in positive:
-                color = "#1f77b4"  # Blue
+                color = "#1f77b4"
             elif start in negative and end in negative:
-                color = "#d62728"  # Red
-            elif (start in positive and end in negative) or (
-                start in negative and end in positive
-            ):
-                color = "#9467bd"  # Purple
-            elif (start in positive and end not in negative) or (
-                end in positive and start not in negative
-            ):
-                color = "#b4cad6"  # Grayish blue
-            elif (start in negative and end not in negative) or (
-                end in negative and start not in positive
-            ):
-                color = "#dc9f9e"  # Grayish red
-            else:
-                color = "#7f7f7f"  # Grey
-
-            # Calculate edge width with a minimum thickness
+                color = "#d62728"
+            elif (start in positive and end in negative) or (start in negative and end in positive):
+                color = "#9467bd"
             edge_width = min_width + (count / max_count) * (max_width - min_width)
+            nx.draw_networkx_edges(G, pos, edgelist=[edge], width=edge_width, alpha=0.45, edge_color=color)
 
-            nx.draw_networkx_edges(
-                G, pos, edgelist=[edge], width=edge_width, alpha=0.45, edge_color=color
-            )
-        # Draw node labels with custom bbox
-        # Calculate label size
-        width, height = figsize
-        reference_width = 12  # Reference width for (12, 8) figure
-        base_font_size = custom_font - base_size * 0.07  # Original calculation
-        scaled_font_size = base_font_size * (
-            width / reference_width
-        )  # Scale based on width ratio
+        scaled_font_size = custom_font - len(G.nodes()) * 0.07 * (figsize[0] / 12)
+        labels = nx.draw_networkx_labels(G, pos, font_size=scaled_font_size, font_color="white")
 
-        labels = nx.draw_networkx_labels(
-            G, pos, font_size=scaled_font_size, font_color="white"
-        )
-
-        # Customize label backgrounds
         for node, label in labels.items():
             color = node_colors[list(G.nodes()).index(node)]
-            label.set_bbox(
-                dict(
-                    facecolor=color,
-                    edgecolor="none",
-                    alpha=0.7,
-                    pad=0.5,
-                    boxstyle="round,pad=0.5",
-                )
-            )
+            label.set_bbox(dict(facecolor=color, edgecolor="none", alpha=0.7, pad=0.5, boxstyle="round,pad=0.5"))
 
         plt.title(title, fontsize=16, fontweight="bold")
         plt.axis("off")
+        plt.margins(x=marginset, y=marginset)
         plt.tight_layout()
         plt.show()
 
@@ -1110,3 +1068,57 @@ class EmoScores:
                     weight += edge[2]
                     break
         return weight
+
+
+    def export_whole_fmnt(self, fmnt, filename):
+    """
+    Export a Forma Mentis Network to a structured .txt file including:
+    - Edge list (node1, node2)
+    - Positive nodes
+    - Negative nodes
+    - Neutral nodes
+
+    Parameters:
+    - fmnt: a FormamentisNetwork (or any object with .edges and .nodes)
+    - filename: output file name (should include .txt extension)
+    """
+    # Get valence word sets for this language
+    positive_words, negative_words, _ = _valences(self.language)
+
+    # Extract all nodes from fmnt
+    all_nodes = set()
+    edges = []
+
+    for edge in fmnt.edges:
+        if len(edge) >= 2:
+            node1, node2 = edge[0], edge[1]
+            edges.append((node1, node2))
+            all_nodes.update([node1, node2])
+
+    # Categorize nodes
+    positive_nodes = sorted([node for node in all_nodes if node in positive_words])
+    negative_nodes = sorted([node for node in all_nodes if node in negative_words])
+    neutral_nodes = sorted([node for node in all_nodes if node not in positive_words and node not in negative_words])
+
+    # Write to file
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write("# Forma Mentis Network Export\n\n")
+
+        f.write("## Edges\n")
+        for n1, n2 in edges:
+            f.write(f"{n1} -- {n2}\n")
+
+        f.write("\n## Positive Nodes\n")
+        for node in positive_nodes:
+            f.write(f"{node}\n")
+
+        f.write("\n## Negative Nodes\n")
+        for node in negative_nodes:
+            f.write(f"{node}\n")
+
+        f.write("\n## Neutral Nodes\n")
+        for node in neutral_nodes:
+            f.write(f"{node}\n")
+
+    print(f"[✔] Network exported successfully to '{filename}'")
+
