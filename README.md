@@ -31,7 +31,7 @@ import nltk
 nltk.download('wordnet') #English
 ```
 
-**Wiki & Guide:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
+**For further info please check our Wiki Page:** [Link to EmoAtlas' Wiki Page](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
 
 
 An example textual forma mentis network:
