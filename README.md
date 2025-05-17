@@ -2,7 +2,7 @@
 
 EmoAtlas: An emotional network analyzer of texts that merges psychological lexicons, artificial intelligence, and network science. Read our paper on [Behavior Research Methods](https://link.springer.com/article/10.3758/s13428-024-02553-7).
 
-Wiki & Guide: [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
+**Wiki & Guide:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
 
 ## Description
 
@@ -31,7 +31,12 @@ import nltk
 nltk.download('wordnet') #English
 ```
 
+**Wiki & Guide:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
+
 ## Usage and Guides
+
+![Senza titolo](https://github.com/user-attachments/assets/2a7021e0-2817-479a-abf9-fd324046f266)
+
 
 **Guides and other information about the package are available here:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
 
