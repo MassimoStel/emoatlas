@@ -36,9 +36,9 @@ nltk.download('wordnet') #English
 **Guides and other information about the package are available here:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
 
 #### Google Colab
-A Google Colab simple demo is also available [here](https://colab.research.google.com/drive/1qzymy0-5EXv3E6dQ0c_D3mv8tyvjSduX?usp=sharing).
+A Google Colab simple demo is also available [here](https://colab.research.google.com/drive/1DWbnQY_wbpEc5_KHA1UUTdCd3_FFBPfN?usp=sharing).
 
-**It is suggested to refer to the guides of the `Demos&Guides/` folder to understand how to use the package.**
+**It is suggested to refer to the guides of the Wiki Page to fully understand how to use the package and interpret its results.**
 
 ## Acknowledgements
 The original version of EmoAtlas was written by [@AlfonsoSemeraro](https://github.com/alfonsosemeraro).
