@@ -32,7 +32,8 @@ nltk.download('wordnet') #English
 ```
 
 ## Usage and Guides
-See the Jupyter notebooks in `Demos&Guides/` for examples of how to use emoatlas ([Jupyter notebook](https://github.com/jupyter/notebook) required). **Guides and other information about the package are also available in that folder.**
+
+**Guides and other information about the package are available here:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
 
 #### Google Colab
 A Google Colab simple demo is also available [here](https://colab.research.google.com/drive/1qzymy0-5EXv3E6dQ0c_D3mv8tyvjSduX?usp=sharing).
