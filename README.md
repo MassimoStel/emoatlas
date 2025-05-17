@@ -33,9 +33,14 @@ nltk.download('wordnet') #English
 
 **Wiki & Guide:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
 
-## Usage and Guides
+
+An example textual forma mentis network:
 
 ![Senza titolo](https://github.com/user-attachments/assets/2a7021e0-2817-479a-abf9-fd324046f266)
+
+
+
+## Usage and Guides
 
 
 **Guides and other information about the package are available here:** [Start Using EmoAtlas Here](https://github.com/MassimoStel/emoatlas/wiki/0-%E2%80%90-Home)
@@ -46,6 +51,7 @@ A Google Colab simple demo is also available [here](https://colab.research.googl
 **It is suggested to refer to the guides of the Wiki Page to fully understand how to use the package and interpret its results.**
 
 ## Acknowledgements
+The current version of EmoAtlas is maintained and further developed by [@MassimoStella](https://github.com/massimostel). 
 The original version of EmoAtlas was written by [@AlfonsoSemeraro](https://github.com/alfonsosemeraro).
 
 Thanks to [@FinleyGibson](https://github.com/FinleyGibson), [@GiulioRossetti](https://github.com/GiulioRossetti) and especially [@RiccardoImprota](https://github.com/RiccardoImprota) for their contribution to the testing, debugging and refactoring of this library.
