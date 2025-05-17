@@ -1071,54 +1071,54 @@ class EmoScores:
 
 
     def export_whole_fmnt(self, fmnt, filename):
-    """
-    Export a Forma Mentis Network to a structured .txt file including:
-    - Edge list (node1, node2)
-    - Positive nodes
-    - Negative nodes
-    - Neutral nodes
-
-    Parameters:
-    - fmnt: a FormamentisNetwork (or any object with .edges and .nodes)
-    - filename: output file name (should include .txt extension)
-    """
-    # Get valence word sets for this language
-    positive_words, negative_words, _ = _valences(self.language)
-
-    # Extract all nodes from fmnt
-    all_nodes = set()
-    edges = []
-
-    for edge in fmnt.edges:
-        if len(edge) >= 2:
-            node1, node2 = edge[0], edge[1]
-            edges.append((node1, node2))
-            all_nodes.update([node1, node2])
-
-    # Categorize nodes
-    positive_nodes = sorted([node for node in all_nodes if node in positive_words])
-    negative_nodes = sorted([node for node in all_nodes if node in negative_words])
-    neutral_nodes = sorted([node for node in all_nodes if node not in positive_words and node not in negative_words])
-
-    # Write to file
-    with open(filename, 'w', encoding='utf-8') as f:
-        f.write("# Forma Mentis Network Export\n\n")
-
-        f.write("## Edges\n")
-        for n1, n2 in edges:
-            f.write(f"{n1} -- {n2}\n")
-
-        f.write("\n## Positive Nodes\n")
-        for node in positive_nodes:
-            f.write(f"{node}\n")
-
-        f.write("\n## Negative Nodes\n")
-        for node in negative_nodes:
-            f.write(f"{node}\n")
-
-        f.write("\n## Neutral Nodes\n")
-        for node in neutral_nodes:
-            f.write(f"{node}\n")
-
-    print(f"[✔] Network exported successfully to '{filename}'")
+        """
+        Export a Forma Mentis Network to a structured .txt file including:
+        - Edge list (node1, node2)
+        - Positive nodes
+        - Negative nodes
+        - Neutral nodes
+    
+        Parameters:
+        - fmnt: a FormamentisNetwork (or any object with .edges and .nodes)
+        - filename: output file name (should include .txt extension)
+        """
+        # Get valence word sets for this language
+        positive_words, negative_words, _ = _valences(self.language)
+    
+        # Extract all nodes from fmnt
+        all_nodes = set()
+        edges = []
+    
+        for edge in fmnt.edges:
+            if len(edge) >= 2:
+                node1, node2 = edge[0], edge[1]
+                edges.append((node1, node2))
+                all_nodes.update([node1, node2])
+    
+        # Categorize nodes
+        positive_nodes = sorted([node for node in all_nodes if node in positive_words])
+        negative_nodes = sorted([node for node in all_nodes if node in negative_words])
+        neutral_nodes = sorted([node for node in all_nodes if node not in positive_words and node not in negative_words])
+    
+        # Write to file
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write("# Forma Mentis Network Export\n\n")
+    
+            f.write("## Edges\n")
+            for n1, n2 in edges:
+                f.write(f"{n1} -- {n2}\n")
+    
+            f.write("\n## Positive Nodes\n")
+            for node in positive_nodes:
+                f.write(f"{node}\n")
+    
+            f.write("\n## Negative Nodes\n")
+            for node in negative_nodes:
+                f.write(f"{node}\n")
+    
+            f.write("\n## Neutral Nodes\n")
+            for node in neutral_nodes:
+                f.write(f"{node}\n")
+    
+        print(f"[✔] Network exported successfully to '{filename}'")
 
