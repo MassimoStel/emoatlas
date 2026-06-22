@@ -1,4 +1,6 @@
-<img src="ea.png" data-canonical-src="ea.png" width="200" height="200" />
+<p align="center">
+  <img src="EmoAtlas Logo.png" data-canonical-src="ea.png" width="200" height="200" />
+</p>
 
 # EmoAtlas
 
