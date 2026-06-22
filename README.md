@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="EmoAtlas Logo" data-canonical-src="eal.png" width="230" height="260" />
+  <img src="ea.png" width="230" height="260" alt="EmoAtlas logo" />
 </p>
 
 # EmoAtlas
