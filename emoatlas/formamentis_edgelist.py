@@ -17,6 +17,92 @@ import matplotlib.pyplot as plt
 from nltk.corpus import wordnet as wn
 from collections import namedtuple
 
+#MS: Updated in version 0.3.0 to have a more comprehensive list of Italian discourse words, which are not stopwords but can be useful for formamentis networks.
+try:
+    import simplemma
+except ImportError:
+    simplemma = None
+
+
+#MS: Updated in version 0.3.0 to have a more comprehensive list of Italian discourse words, which are not stopwords but can be useful for formamentis networks.
+def _build_italian_simplemma_patch_map(text, nlp):
+    """
+    Build a conservative patch map:
+    bad_spacy_lemma -> simplemma_lemma
+
+    Only patches likely malformed spaCy Italian lemmas, e.g.
+    trattengere -> trattenere
+    deprettere -> depresso
+
+    It avoids changing valid inflected forms like:
+    reprimo -> reprimo
+    """
+    if simplemma is None:
+        return {}
+
+    patch_map = {}
+
+    for token in nlp(text):
+        if token.is_space or token.is_punct:
+            continue
+
+        token_text = token.text.lower().strip()
+        spacy_lemma = token.lemma_.lower().strip()
+        simplemma_lemma = simplemma.lemmatize(token_text, lang="it")
+
+        if not simplemma_lemma:
+            continue
+
+        simplemma_lemma = str(simplemma_lemma).lower().strip()
+
+        # Case 1: spaCy produced a malformed lemma different from both
+        # the original word and Simplemma's analysis.
+        if (
+            spacy_lemma
+            and spacy_lemma != token_text
+            and spacy_lemma != simplemma_lemma
+        ):
+            patch_map[spacy_lemma] = simplemma_lemma
+
+        # Case 2: spaCy produced clitic artifacts like "fermare mi".
+        if " " in spacy_lemma and " " not in token_text:
+            patch_map[spacy_lemma] = simplemma_lemma
+
+    return patch_map
+
+#MS: Updated in version 0.3.0 to have a more comprehensive list of Italian discourse words, which are not stopwords but can be useful for formamentis networks.
+def _patch_italian_formamentis_nodes(edges, vertex, patch_map, multiplex=False):
+    """
+    Relabel final Forma Mentis nodes after network construction.
+    Does not affect dependency parsing, POS filtering, stopword filtering,
+    or max_distance graph extraction.
+    """
+    if not patch_map:
+        return edges, vertex
+
+    def patch_node(node):
+        node = str(node).lower().strip()
+        return patch_map.get(node, node)
+
+    if multiplex:
+        patched_edges = [
+            (patch_node(a), patch_node(b), c)
+            for a, b, c in edges
+        ]
+    else:
+        patched_edges = [
+            (patch_node(a), patch_node(b))
+            for a, b in edges
+        ]
+
+    patched_vertex = list(
+        set(
+            patch_node(v)
+            for v in vertex
+        )
+    )
+
+    return patched_edges, patched_vertex
 
 def _wordnet_synonyms(vertexlist, language, with_type=False):
     """
@@ -434,6 +520,23 @@ def get_formamentis_edgelist(
         with_type=with_type,
     )
 
+    #MS: Updated in version 0.3.0 to have a more comprehensive list of Italian discourse words, which are not stopwords but can be useful for formamentis networks.
+    # Conservative Italian lemma repair at network level.
+    # This does not modify network construction, only final node labels.
+    if (
+        language == "italian"
+        and stem_or_lem == "lemmatization"
+        and simplemma is not None
+    ):
+        italian_patch_map = _build_italian_simplemma_patch_map(text, spacy_model)
+
+        edges, vertex = _patch_italian_formamentis_nodes(
+            edges,
+            vertex,
+            italian_patch_map,
+            multiplex=with_type,
+        )
+
     # target words!
     if target_word:
         neighbors = list(
@@ -542,3 +645,170 @@ def draw_formamentis(edgelist, language="english", ax=None):
                 bbox=dict(boxstyle="round", fc="white", ec="grey", linewidth=1),
             )
     ax.axis("off")
+
+
+
+
+
+#MS: Updated in version 0.3.0 to have a more comprehensive list of Italian discourse words, which are not stopwords but can be useful for formamentis networks.
+keep_discourse_words_italian = {
+    "adesso",
+    "allora",
+    "ancora",
+    "comunque",
+    "davanti",
+    "dentro",
+    "dietro",
+    "dopo",
+    "durante",
+    "finalmente",
+    "fino",
+    "forse",
+    "fuori",
+    "ieri",
+    "insieme",
+    "intanto",
+    "intorno",
+    "invece",
+    "lontano",
+    "mai",
+    "mentre",
+    "nemmeno",
+    "neppure",
+    "oggi",
+    "oltre",
+    "perfino",
+    "persino",
+    "prima",
+    "quasi",
+    "sempre",
+    "senza",
+    "solo",
+    "soltanto",
+    "sopra",
+    "sotto",
+    "spesso",
+    "subito",
+    "talvolta",
+    "troppo",
+    "vicino",
+}
+
+keep_semantic_words_italian = {
+    "accidenti",
+    "attesa",
+    "avanti",
+    "bene",
+    "benissimo",
+    "brava",
+    "bravo",
+    "casa",
+    "caso",
+    "cima",
+    "citta",
+    "città",
+    "conclusione",
+    "consiglio",
+    "cortesia",
+    "cosa",
+    "esempio",
+    "favore",
+    "fine",
+    "forza",
+    "futuro",
+    "generale",
+    "giorno",
+    "giorni",
+    "governo",
+    "grande",
+    "grazie",
+    "gruppo",
+    "improvviso",
+    "lato",
+    "lavoro",
+    "luogo",
+    "male",
+    "malissimo",
+    "mancanza",
+    "meglio",
+    "mezzo",
+    "ministro",
+    "modo",
+    "momento",
+    "mondo",
+    "nazionale",
+    "niente",
+    "nulla",
+    "nuovo",
+    "ora",
+    "ore",
+    "paese",
+    "parte",
+    "peccato",
+    "peggio",
+    "persone",
+    "piedi",
+    "pieno",
+    "posto",
+    "purtroppo",
+    "registrazione",
+    "scopo",
+    "seguito",
+    "solito",
+    "tempo",
+    "titolo",
+    "uomo",
+    "via",
+    "vita",
+    "volta",
+    "volte",
+}
+
+keep_psychological_italian = {
+    "bene",
+    "male",
+    "malissimo",
+    "meglio",
+    "peggio",
+    "forse",
+    "mai",
+    "sempre",
+    "troppo",
+    "senza",
+    "sotto",
+    "attesa",
+    "forza",
+    "futuro",
+    "lavoro",
+    "mancanza",
+    "momento",
+    "niente",
+    "nulla",
+    "parte",
+    "peccato",
+    "purtroppo",
+    "scopo",
+    "tempo",
+    "uomo",
+    "vita",
+}
+
+# Merge all keepword sets
+keepwords_it = sorted(
+    keep_psychological_italian
+    | keep_semantic_words_italian
+    | keep_discourse_words_italian
+)
+
+keepwords_en = [
+    'against', 'all', 'alone', 'always', 'amount', 'another', 'anyone',
+    'back', 'become', 'becoming', 'before', 'beyond', 'bottom', 'call',
+    'down', 'eight', 'eleven', 'empty', 'everyone', 'fifteen', 'fifty',
+    'first', 'five', 'forty', 'four', 'front', 'give', 'he', 'i', 'just',
+    'keep', 'move', 'myself', 'never', 'next', 'nine', 'nobody', 'none',
+    'nothing', 'now', 'one', 'others', 'ourselves', 'part', 'please',
+    'really', 'say', 'see', 'seem', 'serious', 'she', 'side', 'six',
+    'sixty', 'sometimes', 'take', 'they', 'three', 'together', 'top',
+    'twelve', 'twenty', 'two', 'under', 'up', 'us', 'well', 'you',
+    'yourself'
+]
