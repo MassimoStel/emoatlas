@@ -2,7 +2,7 @@
   <img src="eal.png" width="380" height="460" alt="EmoAtlas logo" />
 </p>
 
-# EmoAtlas
+# A Python Library to Extract Cognitive Networks and Emotions from Texts
 
 EmoAtlas is a Python package for cognitive-emotional text analysis. It transforms text into textual forma mentis networks and uses multilingual emotion lexicons to profile the emotional content of words, semantic frames, and full documents.
 
@@ -16,14 +16,11 @@ The package is designed for researchers, students, and analysts who want to move
 
 Repository: https://github.com/MassimoStel/emoatlas
 
-Matching Colab notebook prepared with this README: `EmoAtlas_full_tutorial_Colab.ipynb`. After committing the notebook to the repository root, this URL will open it directly in Google Colab:
+We have an easy-to-use Colab notebook prepared with this README. 
 
-```text
-https://colab.research.google.com/github/MassimoStel/emoatlas/blob/main/EmoAtlas_full_tutorial_Colab.ipynb
-```
+If you use this package, please cite our main paper: 
 
-
-Main reference: Semeraro, A., Vilella, S., Improta, R. et al. (2025). *EmoAtlas: An emotional network analyzer of texts that merges psychological lexicons, artificial intelligence, and network science*. Behavior Research Methods, 57, 77. https://doi.org/10.3758/s13428-024-02553-7
+Semeraro, A., Vilella, S., Improta, R. et al. (2025). *EmoAtlas: An emotional network analyzer of texts that merges psychological lexicons, artificial intelligence, and network science*. Behavior Research Methods, 57, 77. https://doi.org/10.3758/s13428-024-02553-7
 
 ---
 
@@ -47,21 +44,9 @@ Main reference: Semeraro, A., Vilella, S., Improta, R. et al. (2025). *EmoAtlas:
 
 EmoAtlas combines three ingredients:
 
-1. **Natural language processing** through spaCy. spaCy tokenizes, lemmatizes, tags, and parses text.
+1. **Interpretable natural language processing** through spaCy. spaCy tokenizes, lemmatizes, tags, and parses text.
 2. **Textual forma mentis networks**. Relevant words are represented as nodes, and links represent relations extracted from the text and optional semantic enrichment.
 3. **Emotion lexicons and Plutchik emotions**. Words are matched against multilingual emotion resources to compute emotional profiles over eight Plutchik emotions: anger, trust, surprise, disgust, joy, sadness, fear, and anticipation.
-
-A typical workflow is:
-
-```python
-from emoatlas import EmoScores
-
-emo = EmoScores(language="english", spacy_model="en_core_web_sm")
-fmn = emo.formamentis_network(text)
-emo.draw_formamentis(fmn)
-emo.emotions(text)
-emo.zscores(text)
-```
 
 ---
 
@@ -75,7 +60,7 @@ This repository includes a Windows setup script named similar to:
 setup_emoatlas_windows.bat
 ```
 
-The attached script automates the most important setup steps for Windows users with Anaconda or Miniconda. It:
+Download the bat installer from here and execute it. This script automates the most important setup steps for Windows users with Anaconda or Miniconda. It:
 
 1. Looks for `conda.bat` in common Anaconda and Miniconda locations.
 2. Creates a Conda environment named `emoatlas311` with Python 3.11.
@@ -88,7 +73,7 @@ The attached script automates the most important setup steps for Windows users w
 9. Downloads NLTK WordNet resources.
 10. Registers a Jupyter kernel called `Python (emoatlas311)`.
 
-Step-by-step:
+Step-by-step installation:
 
 1. Install Anaconda or Miniconda for Windows if you do not already have it.
 2. Save the `.bat` file locally, for example on your Desktop or in the repository folder.
@@ -102,10 +87,10 @@ After the `.bat` installation, instantiate EmoAtlas with the same spaCy model in
 ```python
 from emoatlas import EmoScores
 
-emo = EmoScores(language="english", spacy_model="en_core_web_sm")
+emo = EmoScores(language="english", spacy_model="en_core_web_lg")
 ```
 
-Important: if you omit `spacy_model`, EmoAtlas tries to load the default large model for the selected language, for example `en_core_web_lg` for English and `it_core_news_lg` for Italian. The `.bat` file installs `en_core_web_sm`, so the examples below explicitly pass `spacy_model="en_core_web_sm"`.
+Important: if you omit `spacy_model`, EmoAtlas tries to load the default large model for the selected language, for example `en_core_web_lg` for English and `it_core_news_lg` for Italian. The `.bat` file installs `en_core_web_lg` (which requires 500MB circa).
 
 ### 2.2 Manual installation with pip
 
@@ -114,8 +99,8 @@ Use this route on macOS, Linux, Windows without Conda, or custom environments:
 ```bash
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install git+https://github.com/MassimoStel/emoatlas.git
-python -m spacy download en_core_web_sm
-python -m spacy download it_core_news_sm
+python -m spacy download en_core_web_lg
+python -m spacy download it_core_news_lg
 ```
 
 Then install NLTK resources:
@@ -124,13 +109,6 @@ Then install NLTK resources:
 import nltk
 nltk.download("wordnet")
 nltk.download("omw-1.4")
-```
-
-For better parsing quality, you may install large spaCy models instead:
-
-```bash
-python -m spacy download en_core_web_lg
-python -m spacy download it_core_news_lg
 ```
 
 Then initialize without passing `spacy_model`, or pass the large model explicitly:
@@ -146,15 +124,15 @@ In Colab, run shell commands with `!`:
 
 ```python
 !pip install -q git+https://github.com/MassimoStel/emoatlas.git simplemma
-!python -m spacy download en_core_web_sm
-!python -m spacy download it_core_news_sm
+!python -m spacy download en_core_web_lg
+!python -m spacy download it_core_news_lg
 
 import nltk
 nltk.download("wordnet")
 nltk.download("omw-1.4")
 ```
 
-`simplemma` is optional, but useful for Italian because recent EmoAtlas code can apply conservative repairs to Italian lemmas when `simplemma` is available.
+`simplemma` is not optional. It is extremely useful for Italian because recent EmoAtlas code can apply conservative repairs to Italian lemmas when `simplemma` is available. Hence we recommend it in the pip install pipeline and in the bat file.
 
 ---
 
@@ -169,7 +147,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 ```
 
-The repository currently exposes the Italian keepword list as `keepwords_it`. The examples alias it as `keepwords_ita` because that name is clearer in bilingual tutorials:
+Keepwords are lists of words that spacy would discard as stopwords, however these words could be important for psychological or social inquiries (e.g. "I" vs "you"). The repository currently exposes the Italian keepword list as `keepwords_it`. The examples alias it as `keepwords_ita` because that name is clearer in bilingual tutorials:
 
 ```python
 from emoatlas.formamentis_edgelist import keepwords_it as keepwords_ita
@@ -238,14 +216,14 @@ a safer future.
 from emoatlas import EmoScores
 from emoatlas.formamentis_edgelist import keepwords_en
 
-emo_en = EmoScores(language="english", spacy_model="en_core_web_sm")
+emo_en = EmoScores(language="english", spacy_model="en_core_web_lg")
 
 fmnt_en = emo_en.formamentis_network(
     text_en,
     keepwords=keepwords_en,
     stopwords=[],
     max_distance=3,
-    semantic_enrichment=["synonyms", "hypernyms"],
+    semantic_enrichment=["synonyms"],
     multiplex=True,
 )
 ```
@@ -255,8 +233,8 @@ What the main parameters mean:
 - `keepwords=keepwords_en` keeps useful English discourse, pronoun, and semantic words that might otherwise be removed by default stopword filters.
 - `stopwords=[]` means no additional custom stopwords are removed beyond spaCy stopword logic.
 - `max_distance=3` links retained words that are within three syntactic steps inside the sentence-level dependency graph.
-- `semantic_enrichment=["synonyms", "hypernyms"]` adds WordNet-based semantic links when available.
-- `multiplex=True` keeps edge types separated instead of flattening them into a single edge list.
+- `semantic_enrichment=["synonyms"]` adds WordNet-based semantic links for synonyms, when available.
+- `multiplex=True` keeps edge types separated instead of flattening them into a single edge list. This is crucial for highlighting links of different colours in the visualisations.
 
 ### 5.3 Inspect layer sizes and central words
 
