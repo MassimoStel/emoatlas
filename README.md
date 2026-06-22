@@ -60,7 +60,7 @@ This repository includes a Windows setup script named similar to:
 setup_emoatlas_windows.bat
 ```
 
-Download the bat installer from here and execute it. This script automates the most important setup steps for Windows users with Anaconda or Miniconda. It:
+Download the bat installer from here (https://github.com/MassimoStel/emoatlas/blob/main/setup_emoatlas_windows.bat) and execute it. This script automates the most important setup steps for Windows users with Anaconda or Miniconda. It:
 
 1. Looks for `conda.bat` in common Anaconda and Miniconda locations.
 2. Creates a Conda environment named `emoatlas311` with Python 3.11.
