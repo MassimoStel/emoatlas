@@ -2,7 +2,7 @@
   <img src="eal.png" width="380" height="460" alt="EmoAtlas logo" />
 </p>
 
-# A Library to Get Cognitive Networks and Emotions from Texts
+# A Library to Get Cognitive Networks & Emotions in Texts
 
 EmoAtlas is a Python package for cognitive-emotional text analysis. It transforms text into textual forma mentis networks and uses multilingual emotion lexicons to profile the emotional content of words, semantic frames, and full documents.
 
@@ -68,7 +68,7 @@ Download the bat installer from here and execute it. This script automates the m
 4. Upgrades `pip`, `setuptools`, and `wheel`.
 5. Installs EmoAtlas from GitHub.
 6. Repairs the `tokenizers` compatibility range.
-7. Installs the lightweight English spaCy model `en_core_web_sm`.
+7. Installs the largest English spaCy model `en_core_web_lg`.
 8. Installs JupyterLab, Notebook, and IPython kernel support.
 9. Downloads NLTK WordNet resources.
 10. Registers a Jupyter kernel called `Python (emoatlas311)`.
@@ -156,8 +156,8 @@ from emoatlas.formamentis_edgelist import keepwords_it as keepwords_ita
 Initialize analyzers:
 
 ```python
-emo_en = EmoScores(language="english", spacy_model="en_core_web_sm")
-emo_it = EmoScores(language="italian", spacy_model="it_core_news_sm")
+emo_en = EmoScores(language="english", spacy_model="en_core_web_lg")
+emo_it = EmoScores(language="italian", spacy_model="it_core_news_lg")
 ```
 
 ---
@@ -227,6 +227,8 @@ fmnt_en = emo_en.formamentis_network(
     multiplex=True,
 )
 ```
+
+**IMPORTANT**: By default, Multiplex = False but synonyms are still computed and added to the syntactic edges. However, the resulting network is treated as single-layer and syntactic edges are not highlighted. To highlight synonyms in green, turn Multiplex to True and selected the specific semantic enrinchment of synonyms.
 
 What the main parameters mean:
 
@@ -394,7 +396,7 @@ The Italian keepword list is exposed in the code as `keepwords_it`; this README 
 from emoatlas import EmoScores
 from emoatlas.formamentis_edgelist import keepwords_it as keepwords_ita
 
-emo_it = EmoScores(language="italian", spacy_model="it_core_news_sm")
+emo_it = EmoScores(language="italian", spacy_model="it_core_news_lg")
 ```
 
 ### 7.2 Define an Italian text
@@ -611,13 +613,13 @@ else:
 Install the requested model, or pass the model you actually installed:
 
 ```bash
-python -m spacy download en_core_web_sm
-python -m spacy download it_core_news_sm
+python -m spacy download en_core_web_lg
+python -m spacy download it_core_news_lg
 ```
 
 ```python
-EmoScores(language="english", spacy_model="en_core_web_sm")
-EmoScores(language="italian", spacy_model="it_core_news_sm")
+EmoScores(language="english", spacy_model="en_core_web_lg")
+EmoScores(language="italian", spacy_model="it_core_news_lg")
 ```
 
 ### WordNet or synonym enrichment returns no edges
