@@ -2,7 +2,7 @@
   <img src="eal.png" width="380" height="460" alt="EmoAtlas logo" />
 </p>
 
-# A Python Library to Extract Cognitive Networks and Emotions from Texts
+# A Library to Get Cognitive Networks and Emotions from Texts
 
 EmoAtlas is a Python package for cognitive-emotional text analysis. It transforms text into textual forma mentis networks and uses multilingual emotion lexicons to profile the emotional content of words, semantic frames, and full documents.
 
@@ -16,7 +16,7 @@ The package is designed for researchers, students, and analysts who want to move
 
 Repository: https://github.com/MassimoStel/emoatlas
 
-We have an easy-to-use Colab notebook prepared with this README. 
+We have an easy-to-use Colab notebook here: https://colab.research.google.com/drive/1DWbnQY_wbpEc5_KHA1UUTdCd3_FFBPfN#scrollTo=-XL4C6rcoD_E
 
 If you use this package, please cite our main paper: 
 
