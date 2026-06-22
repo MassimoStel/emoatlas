@@ -292,6 +292,27 @@ emo_en.draw_formamentis(
 )
 plt.show()
 ```
+<p align="center">
+  <img src="figures/example1.png" width="720" alt="English forma mentis network generated with keepwords_en" />
+</p>
+
+<p align="center">
+  <em>Figure 1. English forma mentis network generated from the example text using <code>keepwords_en</code>, synonym enrichment, and <code>multiplex=True</code>.</em>
+</p>  
+
+In this visualization, words are nodes and curved links represent relationships between words. Node colors reflect emotional valence: positive, negative, or neutral. With `multiplex=True`, syntactic and semantic links can be visually distinguished instead of being collapsed into a single undifferentiated network.
+
+### 5.5 Semantic frame analysis: visual intuition
+
+Before extracting the frame around a target word, it is useful to clarify what a semantic frame represents. In EmoAtlas, a semantic frame is the local neighborhood of a word inside a forma mentis network: the target concept plus the words directly connected to it.
+
+<p align="center">
+  <img src="figures/example9.png" width="760" alt="Guide to semantic frame analysis with EmoAtlas" />
+</p>
+
+<p align="center">
+  <em>Figure 2. Visual guide to semantic frame analysis in EmoAtlas.</em>
+</p>
 
 ### 5.5 Extract and analyze the semantic frame of a target word
 
@@ -315,6 +336,16 @@ if target in fmnt_en.vertices:
 else:
     print(f"The target word {target!r} is not present after preprocessing. Try a displayed vertex instead.")
 ```
+
+<p align="center">
+  <img src="figures/example2.png" width="620" alt="Semantic frame around resilience" />
+</p>
+
+<p align="center">
+  <em>Figure 2. Semantic frame around <code>resilience</code>. The highlighted target word is shown together with its immediate conceptual neighbors.</em>
+</p>
+
+The semantic frame shows the local cognitive-emotional context of the target word. Instead of visualizing the whole text network, this view isolates the concepts directly connected to `resilience`, making it easier to inspect how the text frames that idea.
 
 ---
 
@@ -378,7 +409,17 @@ emo_en.draw_formamentis(
 plt.show()
 ```
 
-Interpretation:
+<p align="center">
+  <img src="figures/example3.png" width="720" alt="Multiplex English network with synonym relationships highlighted" />
+</p>
+
+<p align="center">
+  <em>Figure 3. Multiplex English network with synonym relationships highlighted separately from the syntactic backbone.</em>
+</p>
+
+This figure illustrates why `multiplex=True` is useful. When the network is multiplex, EmoAtlas keeps syntactic and semantic relations as separate layers. This allows synonym links to be highlighted clearly rather than being mixed into a single edge list.
+
+Here are a couple of tips on the graphics side:
 
 - Use lower `alpha_syntactic` when you want the text-derived syntactic backbone to remain visible but subdued.
 - Use higher `alpha_synonyms` when you want synonym relationships to stand out.
@@ -429,6 +470,7 @@ print(centrality_it)
 print("Nodes:", G_it.number_of_nodes(), "Edges:", G_it.number_of_edges())
 ```
 
+
 ### 7.4 Visualize the Italian network
 
 ```python
@@ -442,6 +484,19 @@ emo_it.draw_formamentis(
 )
 plt.show()
 ```
+
+<p align="center">
+  <img src="figures/example4.png" width="720" alt="Italian forma mentis network generated with keepwords_ita" />
+</p>
+
+<p align="center">
+  <em>Figure 4. Italian forma mentis network generated with <code>keepwords_ita</code>, synonym and hypernym enrichment, and <code>multiplex=True</code>.</em>
+</p>
+
+The Italian network shows how EmoAtlas can be applied beyond English. The same analysis pipeline can be used with `language="italian"` and the Italian keepword list, here imported as `keepwords_ita`.
+
+Thanks to the careful and clever work of Thales David Domingues Aparecido, Alexis Carrillo and Chico Camargo, we have validated EmoAtlas also in Portuguese: https://doi.org/10.3390/ai6100249
+
 
 ### 7.5 Extract the semantic frame around `paura`
 
@@ -465,6 +520,16 @@ if target_it in fmnt_it.vertices:
 else:
     print(f"The target word {target_it!r} is not present after preprocessing. Inspect fmnt_it.vertices.")
 ```
+
+<p align="center">
+  <img src="figures/example5.png" width="620" alt="Semantic frame around paura in Italian" />
+</p>
+
+<p align="center">
+  <em>Figure 5. Semantic frame around <code>paura</code> in the Italian example.</em>
+</p>
+
+The semantic frame around `paura` isolates the immediate conceptual neighborhood of fear in the Italian text. This is useful when the analyst wants to study how one focal concept is embedded in a broader narrative or emotional context.
 
 ---
 
@@ -524,10 +589,27 @@ Normalization options:
 z = emo_en.zscores(emotion_text, n_samples=300)
 pd.Series(z).sort_values(ascending=False)
 ```
+<p align="center">
+  <img src="figures/example6.png" width="360" alt="English emotion z-score table" />
+</p>
+
+<p align="center">
+  <em>Figure 6. Example z-scores for the English emotional analysis.</em>
+</p>
 
 Z-scores compare the observed emotional distribution with a baseline. Positive values indicate emotions that are more represented than expected; negative values indicate emotions that are less represented than expected.
 
-### 8.5 Draw a statistically significant Plutchik flower
+EmoAtlas' z-scores compare the observed emotional profile of the target text with an expected baseline distribution. This makes it possible to identify emotions that are unusually prominent or unusually weak in the text.
+
+<p align="center">
+  <img src="figures/example8.png" width="760" alt="Statistical underpinnings of emotional z-scores" />
+</p>
+
+<p align="center">
+  <em>Figure 6. Statistical intuition behind the z-score calculation used in the emotional analysis.</em>
+</p>
+
+### 8.5 Draw a statistically significant Emotional Flower (Stella, PeerJ Comp Sci, 2020)
 
 ```python
 emo_en.draw_statistically_significant_emotions(
@@ -536,6 +618,15 @@ emo_en.draw_statistically_significant_emotions(
 )
 plt.show()
 ```
+<p align="center">
+  <img src="figures/example7.png" width="520" alt="English Plutchik emotional profile" />
+</p>
+
+<p align="center">
+  <em>Figure 7. Statistically normalized emotional flower for the English example text.</em>
+</p>
+
+The emotional flower draws inspiration from Plutchik's theory of emotions (Plutchik, 1987). However, an emotional flower is a dynamic data visualization technique, it provides a compact visual summary of the emotional profile. Longer petals indicate stronger positive deviations from the baseline, while shorter or inward values indicate weaker or negative deviations.
 
 The default significance threshold used by this wrapper is approximately `[-1.96, 1.96]`. Emotions above the upper threshold are interpreted as over-represented relative to the baseline; emotions below the lower threshold are interpreted as under-represented.
 
