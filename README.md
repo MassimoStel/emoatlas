@@ -34,9 +34,10 @@ Semeraro, A., Vilella, S., Improta, R. et al. (2025). *EmoAtlas: An emotional ne
 6. Using `multiplex=True` to separate relationship layers
 7. Italian complex network text analysis with `keepwords_ita`
 8. English emotional analysis
-9. Exporting and reusing networks
-10. Troubleshooting
-11. Citation and acknowledgements
+9. Mindset streams: Tracing conceptual paths between words
+10. Exporting and reusing networks
+11. Troubleshooting
+12. Citation and acknowledgements
 
 ---
 
@@ -631,10 +632,192 @@ The emotional flower draws inspiration from Plutchik's theory of emotions (Plutc
 The default significance threshold used by this wrapper is approximately `[-1.96, 1.96]`. Emotions above the upper threshold are interpreted as over-represented relative to the baseline; emotions below the lower threshold are interpreted as under-represented.
 
 ---
+## 9. Mindset streams: tracing conceptual paths between words
 
-## 9. Exporting and reusing networks
+A **mindset stream** is a visualization of the shortest conceptual paths connecting two words inside a forma mentis network. We introduced mindset streams in this Physica A paper: https://www.sciencedirect.com/science/article/pii/S0378437123006295
 
-### 9.1 Export a simple non-multiplex edge list
+In a standard network visualization, the user sees the whole cognitive structure of a text. This can be useful, but it can also be visually dense. 
+Semantic frames focuses on specific concepts but it can only visualize local network neighbourhoods. 
+A mindset stream generalizes semantic frames to two endpoints and it focuses on a more specific non-local network question:
+
+> How does the text connect concept A to concept B?
+
+A **mindset stream** is a visualization of the shortest conceptual paths connecting two words inside a forma mentis network. This is useful when the analyst wants to inspect conceptual transitions, bridges between emotional and neutral concepts, or narrative paths linking different parts of a text.
+
+### 9.1 Build a network for mindset-stream analysis
+
+For mindset streams, it is usually simpler to work with a **non-multiplex network**. A non-multiplex network combines all selected relations into one graph, making shortest-path analysis easier.
+
+```python
+from emoatlas import EmoScores
+from emoatlas.formamentis_edgelist import keepwords_en
+
+import networkx as nx
+import matplotlib.pyplot as plt
+
+emo_en = EmoScores(language="english", spacy_model="en_core_web_lg")
+
+text_en = """
+A community facing uncertainty can still build hope, trust, and confidence.
+Fear and fright may spread quickly when people feel alone, but support,
+care, and clear communication can reduce anger and rage. True, uncertainty can lower trust.
+However, the group learns that resilience is not the absence of worry: resilience is the practice of
+moving through concern together, protecting vulnerable people, and imagining
+a safer future.
+"""
+
+fmnt_stream = emo_en.formamentis_network(
+    text_en,
+    keepwords=keepwords_en,
+    stopwords=[],
+    max_distance=3,
+    semantic_enrichment="synonyms",
+    multiplex=False,
+)
+```
+
+The important parameter is:
+
+```python
+multiplex=False
+```
+
+This tells EmoAtlas to return a single-layer forma mentis network. This is convenient for shortest-path analysis because the path algorithm can search across the whole network without having to manage separate syntactic and semantic layers.
+
+### 9.2 Inspect the available words
+
+Before computing a mindset stream, check which words are present in the network.
+
+```python
+sorted(fmnt_stream.vertices)
+```
+
+This step is important because EmoAtlas lemmatizes words. The word displayed in the network may therefore be a lemma rather than the exact surface form from the original text.
+
+For this example, we use:
+
+```python
+start_node = "fright"
+end_node = "absence"
+```
+
+### 9.3 Check whether the two words are connected
+
+A mindset stream can be drawn only if both words are present in the network and belong to the same connected component.
+
+The following code converts the forma mentis network to a NetworkX graph and checks whether a path exists between `fright` and `absence`.
+
+```python
+G_stream = emo_en.formamentis_to_nxgraph(fmnt_stream)
+
+start_node = "fright"
+end_node = "absence"
+
+print("Number of nodes:", G_stream.number_of_nodes())
+print("Number of edges:", G_stream.number_of_edges())
+print("Connected components:", nx.number_connected_components(G_stream))
+
+if start_node not in G_stream:
+    print(f"{start_node!r} is not in the network.")
+    print("Available words:")
+    print(sorted(G_stream.nodes()))
+
+elif end_node not in G_stream:
+    print(f"{end_node!r} is not in the network.")
+    print("Available words:")
+    print(sorted(G_stream.nodes()))
+
+elif not nx.has_path(G_stream, start_node, end_node):
+    print(f"No path exists between {start_node!r} and {end_node!r}.")
+    print(f"\nWords connected to {start_node!r}:")
+    print(sorted(nx.node_connected_component(G_stream, start_node)))
+
+else:
+    print(f"A path exists between {start_node!r} and {end_node!r}.")
+```
+
+This check avoids errors caused by trying to plot a stream between two words that are present in the network but disconnected from each other.
+
+### 9.4 Find all shortest paths from `fright` to `absence`
+
+Once we know that the two words are connected, we can compute all shortest paths between them.
+
+```python
+start_node = "fright"
+end_node = "absence"
+
+if start_node in G_stream and end_node in G_stream and nx.has_path(G_stream, start_node, end_node):
+    shortest_paths = emo_en.find_all_shortest_paths(
+        fmnt_stream,
+        start_node,
+        end_node
+    )
+
+    print(f"Shortest paths from {start_node!r} to {end_node!r}:")
+    for path in shortest_paths:
+        print(" -> ".join(path))
+else:
+    print("The two selected words cannot be connected in the current network.")
+```
+
+A path should be interpreted as a conceptual bridge. For example, a path from `fright` to `absence` shows which intermediate words connect an emotion of fear to the idea of something missing, reduced, or not present.
+
+The exact path depends on the text, the spaCy model, the keepword list, the selected `max_distance`, and the semantic enrichment settings.
+
+### 9.5 Visualize the mindset stream
+
+The mindset stream can now be visualized with `plot_mindset_stream()`.
+
+```python
+start_node = "fright"
+end_node = "absence"
+
+if start_node in G_stream and end_node in G_stream and nx.has_path(G_stream, start_node, end_node):
+    shortest_paths = emo_en.find_all_shortest_paths(
+        fmnt_stream,
+        start_node,
+        end_node
+    )
+
+    emo_en.plot_mindset_stream(
+        graph=fmnt_stream,
+        start_node=start_node,
+        end_node=end_node,
+        shortest_paths=shortest_paths,
+        title=f"Mindset stream: {start_node} to {end_node}",
+        custom_font=14,
+        figsize=(12, 8),
+        marginset=0.25,
+    )
+
+    plt.show()
+else:
+    print("Choose start and end nodes from the same connected component.")
+```
+
+<p align="center">
+  <img src="figures/example10.png" width="760" alt="Mindset stream - the set of shortest paths connecting the two endpoints in the textual forma mentis network of the text." />
+</p>
+
+<p align="center">
+  <em>Figure 6.B Mindset stream - the set of shortest paths connecting the two endpoints in the textual forma mentis network of the text.</em>
+</p>
+
+The resulting plot focuses only on the conceptual route between `fright` and `absence`. This makes it easier to inspect the local pathway connecting a fear-related word to a concept that may represent lack, removal, or missing presence.
+
+### 9.7 Interpretation
+
+A mindset stream should not be interpreted as a causal chain. It does not mean that one psychological state causes another.
+
+Instead, it shows how two concepts are connected inside the text-derived cognitive network.
+
+In this example, the stream from `fright` to `absence` helps identify the words that bridge an emotional concept related to fear with a more abstract concept related to lack or missing presence. This can be useful for studying how a text connects emotional reactions to broader conceptual frames.
+
+
+---
+## 10. Exporting and reusing networks
+
+### 10.1 Export a simple non-multiplex edge list
 
 `export_formamentis()` does not support multiplex networks. Build a non-multiplex network first:
 
@@ -650,13 +833,13 @@ fmnt_export = emo_en.formamentis_network(
 emo_en.export_formamentis(fmnt_export, filename="english_formamentis_edges.txt")
 ```
 
-### 9.2 Import a simple edge list
+### 10.2 Import a simple edge list
 
 ```python
 fmnt_imported = emo_en.import_formamentis("english_formamentis_edges.txt")
 ```
 
-### 9.3 Export a full network with valence categories
+### 10.3 Export a full network with valence categories
 
 ```python
 emo_en.export_whole_fmnt(fmnt_export, "english_formamentis_full_export.txt")
@@ -669,7 +852,7 @@ The full export includes:
 - negative nodes;
 - neutral nodes.
 
-### 9.4 Shortest paths and mindset stream
+### 10.4 Shortest paths and mindset stream
 
 ```python
 G_export = emo_en.formamentis_to_nxgraph(fmnt_export)
@@ -697,7 +880,7 @@ else:
 
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 ### `ValueError: Can't find Spacy model ...`
 
@@ -756,7 +939,7 @@ synonym_edges = fmnt_synonyms_only.edges.get("synonyms", [])
 
 ---
 
-## 11. Citation and acknowledgements
+## 12. Citation and acknowledgements
 
 If you use EmoAtlas in research, cite:
 
