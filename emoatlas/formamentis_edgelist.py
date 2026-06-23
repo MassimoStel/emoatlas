@@ -504,6 +504,11 @@ def get_formamentis_edgelist(
 
     text = _clean_text(text)
 
+    if language == "italian" and not keepwords:
+        keepwords = keepwords_it
+    elif language == "english" and not keepwords:
+        keepwords = keepwords_en
+
     with_type = multiplex
 
     edges, vertex = _get_edges_vertex(
