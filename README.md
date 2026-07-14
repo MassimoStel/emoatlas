@@ -93,6 +93,10 @@ emo = EmoScores(language="english", spacy_model="en_core_web_lg")
 
 Important: if you omit `spacy_model`, EmoAtlas tries to load the default large model for the selected language, for example `en_core_web_lg` for English and `it_core_news_lg` for Italian. The `.bat` file installs `en_core_web_lg` (which requires 500MB circa).
 
+### 2.1B Alternative Windows installer as `.bat` file for Windows users not using Conda
+
+Please download this zip bundle with an alternative bat installer and a detailed README file, guiding you through the full installation process either via CMD prompt or via Power Shell: https://github.com/MassimoStel/emoatlas/blob/main/SETUP_NO_CONDA.zip
+
 ### 2.2 Manual installation with pip
 
 Use this route on macOS, Linux, Windows without Conda, or custom environments:
